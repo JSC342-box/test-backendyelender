@@ -16,11 +16,19 @@ public class SecurityConfig {
         http
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/users/createUsers","/drivers/createDrivers",
-                		"/drivers/update-location/{driverId}","/drivers/get/{id}","/vehicles/registerVehicle","/rides/request","/rides/accept").permitAll()  // allow unauthenticated access to /users endpoints
+                .requestMatchers(
+                    "/", // 👈 allow access to home page
+                    "/users/createUsers",
+                    "/drivers/createDrivers",
+                    "/drivers/update-location/{driverId}",
+                    "/drivers/get/{id}",
+                    "/vehicles/registerVehicle",
+                    "/rides/request",
+                    "/rides/accept"
+                ).permitAll()
                 .anyRequest().authenticated()
             )
-            .httpBasic(Customizer.withDefaults()); // use basic auth only for protected endpoints
+            .httpBasic(Customizer.withDefaults()); // keeps basic auth for protected endpoints
 
         return http.build();
     }
