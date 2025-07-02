@@ -1,23 +1,25 @@
-# -------- Stage 1: Build --------
+# Use OpenJDK 17 slim image
 FROM eclipse-temurin:17-jdk-alpine AS build
 
 WORKDIR /app
 
-# Copy the source code
-COPY . /app
+# Copy everything
+COPY . /app/.
 
-# Make mvnw executable
+# Make Maven wrapper executable
 RUN chmod +x ./mvnw
 
-# Build the application
-RUN ./mvnw clean package -DskipTests
+# Build using Maven wrapper
+RUN --mount=type=cache,id=s/7ff239fc-4a45-42cf-8e10-fe890815f383-m2/repository,target=/app/.m2/repository ./mvnw clean package -DskipTests
 
-# -------- Stage 2: Runtime --------
+# ----------------------
+
+# Final image to run the app
 FROM eclipse-temurin:17-jdk-alpine
 
 WORKDIR /app
 
-# Copy the JAR from the build stage
+# Copy JAR from builder
 COPY --from=build /app/target/Q_Cruzze-0.0.1-SNAPSHOT.jar app.jar
 
 EXPOSE 8080
