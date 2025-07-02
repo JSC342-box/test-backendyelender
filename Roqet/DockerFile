@@ -4,4 +4,4 @@ RUN apt-get update && apt-get install -y dos2unix
 RUN dos2unix mvnw && chmod +x mvnw
 RUN ls -l /app && file /app/mvnw && head -1 /app/mvnw
 RUN sh ./mvnw --version
-RUN ./mvnw clean package -DskipTests 
+RUN chmod +x ./mvnw && ./mvnw clean package -DskipTests 
