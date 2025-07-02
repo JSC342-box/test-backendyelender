@@ -1,0 +1,14 @@
+# Use OpenJDK 17 slim image
+FROM eclipse-temurin:17-jdk-alpine
+
+# Set the working directory
+WORKDIR /app
+
+# Copy the Spring Boot JAR file
+COPY target/Q_Cruzze-0.0.1-SNAPSHOT.jar app.jar
+
+# Expose the port your Spring Boot app runs on
+EXPOSE 8080
+
+# Run the JAR
+ENTRYPOINT ["java", "-jar", "app.jar"]
