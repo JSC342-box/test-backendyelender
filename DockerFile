@@ -32,4 +32,4 @@ ENV PORT=8080
 
 EXPOSE ${PORT}
 
-CMD java $JAVA_OPTS -jar app.jar
+CMD java $JAVA_OPTS -jar app.jar  
