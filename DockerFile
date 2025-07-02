@@ -1,25 +1,37 @@
-# ------------------- Stage 1: Build -------------------
-FROM eclipse-temurin:17-jdk-alpine AS build
+# ---------- Stage 1: Build ----------
+FROM eclipse-temurin:17-jdk as build
 
 WORKDIR /app
 
-# Copy source code
-COPY . .
+# Install Maven
+RUN apt-get update && apt-get install -y maven
 
-# Ensure Maven wrapper has execute permissions, then build
-RUN --mount=type=cache,target=/root/.m2 \
-    chmod +x ./mvnw && ./mvnw clean package -DskipTests
+# Copy Maven config and download dependencies first (for better caching)
+COPY pom.xml .
+RUN mvn dependency:go-offline -B
 
-# ------------------- Stage 2: Runtime -------------------
-FROM eclipse-temurin:17-jdk-alpine
+# Copy the full source code
+COPY src ./src
+
+# Build the application (skip tests for faster deploy)
+RUN mvn package -DskipTests
+
+
+# ---------- Stage 2: Runtime ----------
+FROM eclipse-temurin:17-jre
 
 WORKDIR /app
 
-# Copy the jar file from the build stage
+# Copy the built JAR from build stage
 COPY --from=build /app/target/*.jar app.jar
 
-# Expose the port used by Spring Boot
-EXPOSE 8080
+# Set environment variables
+ENV JAVA_OPTS="-Xmx300m -Xms128m"
+ENV SPRING_PROFILES_ACTIVE=prod
+ENV PORT=8080
 
-# Run the application
-ENTRYPOINT ["java", "-jar", "app.jar"]
+# Expose Spring Boot port
+EXPOSE ${PORT}
+
+# Start the Spring Boot application
+CMD java $JAVA_OPTS -jar app.jar
