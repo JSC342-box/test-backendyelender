@@ -3,12 +3,12 @@ FROM eclipse-temurin:17-jdk as build
 
 WORKDIR /app
 
-# Copy Maven wrapper and set permissions
-COPY mvnw .
+# Copy Maven wrapper and permissions
+COPY mvnw . 
 COPY .mvn .mvn
-RUN chmod +x ./mvnw  # <<< ✅ this line is critical
+RUN chmod +x ./mvnw
 
-# Copy Maven config and pre-download dependencies
+# Preload dependencies
 COPY pom.xml .
 RUN ./mvnw dependency:go-offline -B
 
@@ -32,4 +32,4 @@ ENV PORT=8080
 
 EXPOSE ${PORT}
 
-CMD java $JAVA_OPTS -jar app.jar
+CMD ["sh", "-c", "java $JAVA_OPTS -jar app.jar"]
