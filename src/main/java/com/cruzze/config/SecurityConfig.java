@@ -2,7 +2,6 @@ package com.cruzze.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.SecurityFilterChain;
@@ -14,22 +13,14 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-            .csrf(csrf -> csrf.disable())
+            .csrf(csrf -> csrf.disable()) // Disable CSRF (good for API-only backend)
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers(
-                    "/", // 👈 allow access to home page
-                    "/users/createUsers",
-                    "/drivers/createDrivers",
-                    "/drivers/update-location/{driverId}",
-                    "/drivers/get/{id}",
-                    "/vehicles/registerVehicle",
-                    "/rides/request",
-                    "/rides/accept"
-                ).permitAll()
-                .anyRequest().authenticated()
+                .anyRequest().permitAll()  // ✅ Allow all requests (since you're using Clerk JWTs)
             )
-            .httpBasic(Customizer.withDefaults()); // keeps basic auth for protected endpoints
+            .formLogin(form -> form.disable())   // ✅ Disable login form
+            .httpBasic(basic -> basic.disable()); // ✅ Disable Basic Auth
 
         return http.build();
     }
 }
+
