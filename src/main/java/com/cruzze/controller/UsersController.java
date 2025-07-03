@@ -100,21 +100,25 @@ public class UsersController {
     }
     
     
-    @PutMapping(value = "/updateProfile/{clerkUserId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<ResponseStructure<Users>> updateUser(
-            @PathVariable String clerkUserId,
-            @RequestPart(value = "profileImage", required = false) MultipartFile profileImage,
-            @RequestPart(value = "userEmergencyContactName", required = false) String emergencyName,
-            @RequestPart(value = "userEmergencyContactNumber", required = false) String emergencyNumber,
-            @RequestPart(value = "dateOfBirth", required = false) String dateOfBirth
-    ) {
-        Users updatedUser = usersService.updateUser(clerkUserId, profileImage, emergencyName, emergencyNumber, dateOfBirth);
-        ResponseStructure<Users> response = new ResponseStructure<>();
-        response.setStatus(HttpStatus.OK.value());
-        response.setMessage("User profile updated successfully");
-        response.setData(updatedUser);
-        return ResponseEntity.ok(response);
-    }
+@PutMapping(value = "/updateProfile", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+public ResponseEntity<ResponseStructure<Users>> updateUser(
+        @RequestPart(value = "profileImage", required = false) MultipartFile profileImage,
+        @RequestPart(value = "userEmergencyContactName", required = false) String emergencyName,
+        @RequestPart(value = "userEmergencyContactNumber", required = false) String emergencyNumber,
+        @RequestPart(value = "dateOfBirth", required = false) String dateOfBirth
+) {
+    // ✅ Securely extract clerkUserId from the JWT
+    String clerkUserId = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+    Users updatedUser = usersService.updateUser(clerkUserId, profileImage, emergencyName, emergencyNumber, dateOfBirth);
+
+    ResponseStructure<Users> response = new ResponseStructure<>();
+    response.setStatus(HttpStatus.OK.value());
+    response.setMessage("User profile updated successfully");
+    response.setData(updatedUser);
+    return ResponseEntity.ok(response);
+}
+
 
     @GetMapping("/health")
     public ResponseEntity<String> healthCheck() {
