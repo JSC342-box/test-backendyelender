@@ -23,75 +23,75 @@ public class UsersController {
 
     @Autowired
     private UsersService usersService;
+@PostMapping(value = "/createUsers", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+public ResponseEntity<ResponseStructure<Users>> createUserFromToken(
+        @RequestPart(value = "profileImage", required = false) MultipartFile profileImage,
+        @RequestPart("token") String bearerToken) {
 
-    @PostMapping(value = "/createUsers", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<ResponseStructure<Users>> createUserFromToken(
-            @RequestPart(value = "profileImage", required = false) MultipartFile profileImage,
-            @RequestPart("token") String bearerToken) {
+    try {
+        String token = bearerToken.replace("Bearer ", "");
+        Map<String, Object> claims = JwtUtils.verifyAndExtractPayload(token);
 
-        try {
-            String token = bearerToken.replace("Bearer ", "");
-            Map<String, Object> claims = JwtUtils.verifyAndExtractPayload(token);
+        Users user = new Users();
+        user.setClerkUserId((String) claims.get("sub"));
 
-            Users user = new Users();
-            user.setClerkUserId((String) claims.get("sub"));
-            user.setEmail((String) claims.get("email"));
-            user.setFirstName((String) claims.get("first_name"));
-            user.setLastName((String) claims.get("last_name"));
-            user.setPhoneNumber((String) claims.get("phone_number"));
-
-            // ✅ Set profile image if available
-            if (profileImage != null && !profileImage.isEmpty()) {
-                user.setProfileImage(profileImage.getBytes());
-            }
-
-            // ✅ Safely handle optional metadata
-            Map<String, Object> publicMetadata = (Map<String, Object>) claims.get("public_metadata");
-            if (publicMetadata != null) {
-                if (publicMetadata.containsKey("dateOfBirth")) {
-                    String dob = (String) publicMetadata.get("dateOfBirth");
-                    if (dob != null && !dob.isBlank()) {
-                        user.setDateOfBirth(LocalDate.parse(dob));
-                    }
-                }
-                
-                if (publicMetadata.containsKey("dateOfBirth")) {
-                    String dob = (String) publicMetadata.get("dateOfBirth");
-                    if (dob != null && !dob.isBlank()) {
-                        user.setDateOfBirth(LocalDate.parse(dob));
-                    }
-                }
-
-
-                if (publicMetadata.containsKey("gender")) {
-                    String gender = (String) publicMetadata.get("gender");
-                    if (gender != null && !gender.isBlank()) {
-                        user.setGender(Users.Gender.valueOf(gender.toUpperCase()));
-                    }
-                }
-
-                if (publicMetadata.containsKey("userEmergencyContactName")) {
-                    String name = (String) publicMetadata.get("userEmergencyContactName");
-                    if (name != null && !name.isBlank()) {
-                        user.setUserEmergencyContactName(name);
-                    }
-                }
-
-                if (publicMetadata.containsKey("userEmergencyContactNumber")) {
-                    String number = (String) publicMetadata.get("userEmergencyContactNumber");
-                    if (number != null && !number.isBlank()) {
-                        user.setUserEmergencyContactNumber(number);
-                    }
-                }
-            }
-
-            ResponseStructure<Users> response = usersService.createUser(user);
-            return ResponseEntity.status(response.getStatus()).body(response);
-
-        } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid or expired token", e);
+        // Email is now optional
+        String email = (String) claims.get("email");
+        if (email != null && !email.isBlank()) {
+            user.setEmail(email);
         }
+
+        String firstName = (String) claims.get("first_name");
+        if (firstName != null && !firstName.isBlank()) {
+            user.setFirstName(firstName);
+        }
+
+        String lastName = (String) claims.get("last_name");
+        if (lastName != null && !lastName.isBlank()) {
+            user.setLastName(lastName);
+        }
+
+        String phoneNumber = (String) claims.get("phone_number");
+        if (phoneNumber != null && !phoneNumber.isBlank()) {
+            user.setPhoneNumber(phoneNumber);
+        }
+
+        // ✅ Set profile image if available
+        if (profileImage != null && !profileImage.isEmpty()) {
+            user.setProfileImage(profileImage.getBytes());
+        }
+
+        // ✅ Handle optional public metadata
+        Map<String, Object> publicMetadata = (Map<String, Object>) claims.get("public_metadata");
+        if (publicMetadata != null) {
+            String dob = (String) publicMetadata.get("dateOfBirth");
+            if (dob != null && !dob.isBlank()) {
+                user.setDateOfBirth(LocalDate.parse(dob));
+            }
+
+            String gender = (String) publicMetadata.get("gender");
+            if (gender != null && !gender.isBlank()) {
+                user.setGender(Users.Gender.valueOf(gender.toUpperCase()));
+            }
+
+            String emergencyName = (String) publicMetadata.get("userEmergencyContactName");
+            if (emergencyName != null && !emergencyName.isBlank()) {
+                user.setUserEmergencyContactName(emergencyName);
+            }
+
+            String emergencyNumber = (String) publicMetadata.get("userEmergencyContactNumber");
+            if (emergencyNumber != null && !emergencyNumber.isBlank()) {
+                user.setUserEmergencyContactNumber(emergencyNumber);
+            }
+        }
+
+        ResponseStructure<Users> response = usersService.createUser(user);
+        return ResponseEntity.status(response.getStatus()).body(response);
+
+    } catch (Exception e) {
+        throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid or expired token", e);
     }
+}
 
 
     @GetMapping("/getUserByClerkUserId/{clerkUserId}")
