@@ -32,7 +32,7 @@ public class Users {
     private byte[] profileImage;
 
 	@Column(name = "user_type", nullable = true)
-    private String user_type;
+    private String userType;
 
     @Column(name = "date_of_birth")
     private LocalDate dateOfBirth;
