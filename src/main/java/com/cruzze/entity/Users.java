@@ -31,6 +31,8 @@ public class Users {
     @Lob
     private byte[] profileImage;
 
+	@Column(name = "user_type", nullable = true)
+    private String user_type;
 
     @Column(name = "date_of_birth")
     private LocalDate dateOfBirth;
@@ -154,7 +156,13 @@ public class Users {
 		this.gender = gender;
 	}
 
+	public String getUserType() {
+		return userType;
+	}
 
+	public void setUserType(String userType) {
+		this.userType = userType;
+	}
 
 	public LocalDateTime getCreatedAt() {
 		return createdAt;

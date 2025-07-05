@@ -46,6 +46,11 @@ public ResponseEntity<ResponseStructure<Users>> createUserFromToken(
             user.setFirstName(firstName);
         }
 
+         String userType = (String) claims.get("user_type");
+        if (userType != null && !userType.isBlank()) {
+            user.setUserType(userType);
+        }
+
         String lastName = (String) claims.get("last_name");
         if (lastName != null && !lastName.isBlank()) {
             user.setLastName(lastName);
