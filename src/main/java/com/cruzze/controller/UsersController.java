@@ -88,8 +88,9 @@ public ResponseEntity<ResponseStructure<Users>> createUserFromToken(
         ResponseStructure<Users> response = usersService.createUser(user);
         return ResponseEntity.status(response.getStatus()).body(response);
 
-    } catch (Exception e) {
-        throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid or expired token", e);
+    }  catch (Exception e) {
+        e.printStackTrace();  
+        throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid or expired token: " + e.getMessage(), e);
     }
 }
 
