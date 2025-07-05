@@ -16,7 +16,7 @@ import java.util.Map;
 
 public class JwtUtils {
 
-    private static final String CLERK_JWKS_URL = "https://api.clerk.dev/.well-known/jwks.json";
+    private static final String CLERK_JWKS_URL = "https://useful-flamingo-41.clerk.accounts.dev/.well-known/jwks.json";
 
     public static Map<String, Object> verifyAndExtractPayload(String token) throws Exception {
         ConfigurableJWTProcessor<SecurityContext> jwtProcessor = new DefaultJWTProcessor<>();
