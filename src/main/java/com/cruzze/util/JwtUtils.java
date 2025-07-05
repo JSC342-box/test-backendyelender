@@ -18,12 +18,16 @@ public class JwtUtils {
 
     private static final String CLERK_JWKS_URL = "https://useful-flamingo-41.clerk.accounts.dev/.well-known/jwks.json";
 
-    public static Map<String, Object> verifyAndExtractPayload(String token) throws Exception {
-        ConfigurableJWTProcessor<SecurityContext> jwtProcessor = new DefaultJWTProcessor<>();
-        JWKSource<SecurityContext> keySource = new RemoteJWKSet<>(new URL(CLERK_JWKS_URL));
-        JWSAlgorithm expectedJWSAlg = JWSAlgorithm.RS256;
+ public static Map<String, Object> verifyAndExtractPayload(String token) throws Exception {
+    ConfigurableJWTProcessor<SecurityContext> jwtProcessor = new DefaultJWTProcessor<>();
+    JWKSource<SecurityContext> keySource = new RemoteJWKSet<>(new URL(CLERK_JWKS_URL));
+    JWSAlgorithm expectedJWSAlg = JWSAlgorithm.RS256;
 
-        jwtProcessor.setJWSKeySelector(new JWSVerificationKeySelector<>(expectedJWSAlg, keySource));
-        return jwtProcessor.process(token, null).getClaims();
-    }
+    jwtProcessor.setJWSKeySelector(new JWSVerificationKeySelector<>(expectedJWSAlg, keySource));
+    System.out.println("⏳ Verifying JWT token...");
+    var claimsSet = jwtProcessor.process(token, null);
+    System.out.println("✅ Claims: " + claimsSet.getClaims());
+    return claimsSet.getClaims();
+}
+
 }
