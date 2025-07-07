@@ -40,7 +40,6 @@ public ResponseEntity<ResponseStructure<Users>> createUserFromToken(
         String phoneNumber = (String) claims.get("phoneNumber");
         String userType = (String) claims.get("userType");
 
-        // validate required
         if (clerkId == null || clerkId.isBlank() ||
             firstName == null || firstName.isBlank() ||
             lastName == null || lastName.isBlank() ||
@@ -55,7 +54,6 @@ public ResponseEntity<ResponseStructure<Users>> createUserFromToken(
         user.setPhoneNumber(phoneNumber);
         user.setUserType(userType);
 
-        // optional fields
         String email = (String) claims.get("email");
         if (email != null && !email.isBlank()) {
             user.setEmail(email);
@@ -86,6 +84,16 @@ public ResponseEntity<ResponseStructure<Users>> createUserFromToken(
             if (emergencyNumber != null && !emergencyNumber.isBlank()) {
                 user.setUserEmergencyContactNumber(emergencyNumber);
             }
+
+            String referralCode = (String) publicMetadata.get("referralCode");
+            if (referralCode != null && !referralCode.isBlank()) {
+                user.setReferralCode(referralCode);
+            }
+
+            String referredBy = (String) publicMetadata.get("referredBy");
+            if (referredBy != null && !referredBy.isBlank()) {
+                user.setReferredBy(referredBy);
+            }
         }
 
         ResponseStructure<Users> response = usersService.createUser(user);
@@ -96,6 +104,7 @@ public ResponseEntity<ResponseStructure<Users>> createUserFromToken(
         throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid or expired token: " + e.getMessage(), e);
     }
 }
+
 
 
 
