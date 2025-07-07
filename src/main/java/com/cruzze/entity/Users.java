@@ -27,9 +27,10 @@ public class Users {
     @Column(name = "last_name", nullable = false)
     private String lastName;
 
-    @Column(name = "profile_image", columnDefinition = "BYTEA")
-    @Lob
-    private byte[] profileImage;
+  @Lob
+@Column(name = "profile_image")
+private byte[] profileImage;
+
 
 	@Column(name = "user_type", nullable = true)
     private String userType;
