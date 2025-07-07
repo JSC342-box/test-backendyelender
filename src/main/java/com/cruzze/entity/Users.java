@@ -27,26 +27,22 @@ public class Users {
     @Column(name = "last_name", nullable = false)
     private String lastName;
 
-
     @Column(name = "profile_image")
     private byte[] profileImage;
 
-
-	@Column(name = "user_type", nullable = true)
+    @Column(name = "user_type", nullable = false)
     private String userType;
 
-    @Column(name = "date_of_birth")
+    @Column(name = "date_of_birth", nullable = true)
     private LocalDate dateOfBirth;
 
     @Enumerated(EnumType.STRING)
     private Gender gender;
 
- 
-    
-    @Column(name = "user_emergency_Contact_Name", nullable = true)
+    @Column(name = "user_emergency_contact_name", nullable = true)
     private String userEmergencyContactName;
-    
-    @Column(name = "user_Emergency_Contact_Number", nullable = true)
+
+    @Column(name = "user_emergency_contact_number", nullable = true)
     private String userEmergencyContactNumber;
 
     @Column(name = "created_at", updatable = false)
@@ -66,9 +62,11 @@ public class Users {
         updatedAt = LocalDateTime.now();
     }
 
-    
+    public enum Gender {
+        MALE, FEMALE, OTHER
+    }
 
-    public Long getId() {
+	public Long getId() {
 		return id;
 	}
 
@@ -91,22 +89,6 @@ public class Users {
 	public void setEmail(String email) {
 		this.email = email;
 	}
-	
-	public String getUserEmergencyContactName() {
-		return userEmergencyContactName;
-	}
-
-	public void setUserEmergencyContactName(String userEmergencyContactName) {
-		this.userEmergencyContactName = userEmergencyContactName;
-	}
-
-	public String getUserEmergencyContactNumber() {
-		return userEmergencyContactNumber;
-	}
-
-	public void setUserEmergencyContactNumber(String userEmergencyContactNumber) {
-		this.userEmergencyContactNumber = userEmergencyContactNumber;
-	}
 
 	public String getPhoneNumber() {
 		return phoneNumber;
@@ -123,7 +105,7 @@ public class Users {
 	public void setFirstName(String firstName) {
 		this.firstName = firstName;
 	}
-	
+
 	public String getLastName() {
 		return lastName;
 	}
@@ -133,13 +115,20 @@ public class Users {
 	}
 
 	public byte[] getProfileImage() {
-	    return profileImage;
+		return profileImage;
 	}
 
 	public void setProfileImage(byte[] profileImage) {
-	    this.profileImage = profileImage;
+		this.profileImage = profileImage;
 	}
 
+	public String getUserType() {
+		return userType;
+	}
+
+	public void setUserType(String userType) {
+		this.userType = userType;
+	}
 
 	public LocalDate getDateOfBirth() {
 		return dateOfBirth;
@@ -157,12 +146,20 @@ public class Users {
 		this.gender = gender;
 	}
 
-	public String getUserType() {
-		return userType;
+	public String getUserEmergencyContactName() {
+		return userEmergencyContactName;
 	}
 
-	public void setUserType(String userType) {
-		this.userType = userType;
+	public void setUserEmergencyContactName(String userEmergencyContactName) {
+		this.userEmergencyContactName = userEmergencyContactName;
+	}
+
+	public String getUserEmergencyContactNumber() {
+		return userEmergencyContactNumber;
+	}
+
+	public void setUserEmergencyContactNumber(String userEmergencyContactNumber) {
+		this.userEmergencyContactNumber = userEmergencyContactNumber;
 	}
 
 	public LocalDateTime getCreatedAt() {
@@ -182,8 +179,5 @@ public class Users {
 	}
 
 
-
-	public enum Gender {
-        MALE, FEMALE, OTHER
-    }
+    
 }

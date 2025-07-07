@@ -23,7 +23,7 @@ public class UsersController {
 
     @Autowired
     private UsersService usersService;
-@PostMapping(value = "/createUsers", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(value = "/createUsers", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 public ResponseEntity<ResponseStructure<Users>> createUserFromToken(
         @RequestPart(value = "profileImage", required = false) MultipartFile profileImage,
         @RequestPart("token") String bearerToken) {
@@ -33,40 +33,38 @@ public ResponseEntity<ResponseStructure<Users>> createUserFromToken(
         Map<String, Object> claims = JwtUtils.verifyAndExtractPayload(token);
 
         Users user = new Users();
-        user.setClerkUserId((String) claims.get("sub"));
 
-        // Email is now optional
+        String clerkId = (String) claims.get("sub");
+        String firstName = (String) claims.get("firstName");
+        String lastName = (String) claims.get("lastName");
+        String phoneNumber = (String) claims.get("phoneNumber");
+        String userType = (String) claims.get("userType");
+
+        // validate required
+        if (clerkId == null || clerkId.isBlank() ||
+            firstName == null || firstName.isBlank() ||
+            lastName == null || lastName.isBlank() ||
+            phoneNumber == null || phoneNumber.isBlank() ||
+            userType == null || userType.isBlank()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Required fields are missing.");
+        }
+
+        user.setClerkUserId(clerkId);
+        user.setFirstName(firstName);
+        user.setLastName(lastName);
+        user.setPhoneNumber(phoneNumber);
+        user.setUserType(userType);
+
+        // optional fields
         String email = (String) claims.get("email");
         if (email != null && !email.isBlank()) {
             user.setEmail(email);
         }
 
-        String firstName = (String) claims.get("first_name");
-        if (firstName != null && !firstName.isBlank()) {
-            user.setFirstName(firstName);
-        }
-
-         String userType = (String) claims.get("user_type");
-        if (userType != null && !userType.isBlank()) {
-            user.setUserType(userType);
-        }
-
-        String lastName = (String) claims.get("last_name");
-        if (lastName != null && !lastName.isBlank()) {
-            user.setLastName(lastName);
-        }
-
-        String phoneNumber = (String) claims.get("phone_number");
-        if (phoneNumber != null && !phoneNumber.isBlank()) {
-            user.setPhoneNumber(phoneNumber);
-        }
-
-        // ✅ Set profile image if available
         if (profileImage != null && !profileImage.isEmpty()) {
             user.setProfileImage(profileImage.getBytes());
         }
 
-        // ✅ Handle optional public metadata
         Map<String, Object> publicMetadata = (Map<String, Object>) claims.get("public_metadata");
         if (publicMetadata != null) {
             String dob = (String) publicMetadata.get("dateOfBirth");
@@ -93,11 +91,12 @@ public ResponseEntity<ResponseStructure<Users>> createUserFromToken(
         ResponseStructure<Users> response = usersService.createUser(user);
         return ResponseEntity.status(response.getStatus()).body(response);
 
-    }  catch (Exception e) {
-        e.printStackTrace();  
+    } catch (Exception e) {
+        e.printStackTrace();
         throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid or expired token: " + e.getMessage(), e);
     }
 }
+
 
 
     @GetMapping("/getUserByClerkUserId/{clerkUserId}")
