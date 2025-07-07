@@ -112,6 +112,9 @@ public class Drivers {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
+     @Column(name = "user_type", nullable = false)
+    private String userType;
+
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();
