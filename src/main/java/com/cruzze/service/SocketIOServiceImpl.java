@@ -1,55 +1,45 @@
 
 package com.cruzze.service;
 
-import com.corundumstudio.socketio.SocketIOClient;
-import com.corundumstudio.socketio.SocketIOServer;
-import com.cruzze.entity.Rides;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.http.*;
 
+import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 public class SocketIOServiceImpl implements SocketIOService {
 
-    @Autowired
-    private SocketIOServer socketServer;
-    
-    
+    private final String SOCKET_SERVER_URL = "https://roqet-socket.up.railway.app/emit";
 
-    // Maintain connected clients by their user/driver ID
-    private final Map<Long, SocketIOClient> driverClients = new ConcurrentHashMap<>();
-    private final Map<Long, SocketIOClient> userClients = new ConcurrentHashMap<>();
+    private final RestTemplate restTemplate = new RestTemplate();
 
-    public void registerDriverClient(Long driverId, SocketIOClient client) {
-        driverClients.put(driverId, client);
-    }
-
-    public void registerUserClient(Long userId, SocketIOClient client) {
-        userClients.put(userId, client);
+    @Override
+    public void sendRideRequest(String driverId, Rides ride) {
+        emitEvent("ride_request", "driver:" + driverId, ride);
     }
 
     @Override
-    public void sendRideRequest(String driverClerkId, Rides ride) {
-        SocketIOClient client = driverClients.get(driverClerkId);
-        if (client != null) {
-            client.sendEvent("ride_request", ride);
-        }
+    public void sendRideAccepted(String userId, Rides updatedRide) {
+        emitEvent("ride_accepted", "user:" + userId, updatedRide);
     }
 
-    @Override
-    public void sendRideAccepted(String clerkUserId, Rides updatedRide) {
-        SocketIOClient client = userClients.get(clerkUserId);
-        if (client != null) {
-            client.sendEvent("ride_accepted", updatedRide);
+    private void emitEvent(String type, String room, Object payload) {
+        Map<String, Object> body = new HashMap<>();
+        body.put("type", type);
+        body.put("room", room);
+        body.put("payload", payload);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        HttpEntity<Map<String, Object>> request = new HttpEntity<>(body, headers);
+
+        ResponseEntity<String> response = restTemplate.postForEntity(SOCKET_SERVER_URL, request, String.class);
+
+        if (!response.getStatusCode().is2xxSuccessful()) {
+            throw new RuntimeException("Failed to emit event: " + response.getBody());
         }
     }
-    
-    public SocketIOClient getUserClient(Long userId) {
-        return userClients.get(userId);  // Assuming userClients map exists
-    }
-
-    
-    
 }
