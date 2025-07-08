@@ -1,17 +1,18 @@
-
 package com.cruzze.service;
 
+import com.cruzze.entity.Rides;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.http.*;
-
+import com.cruzze.service.SocketIOService;
 import java.util.HashMap;
 import java.util.Map;
 
 @Service
 public class SocketIOServiceImpl implements SocketIOService {
 
-    private final String SOCKET_SERVER_URL = "https://roqet-socket.up.railway.app/emit";
+    // 🚀 Railway deployed Node.js REST endpoint
+    private static final String SOCKET_REST_URL = "https://roqet-socket.up.railway.app/emit";
 
     private final RestTemplate restTemplate = new RestTemplate();
 
@@ -25,6 +26,9 @@ public class SocketIOServiceImpl implements SocketIOService {
         emitEvent("ride_accepted", "user:" + userId, updatedRide);
     }
 
+    /**
+     * Internal helper to POST an event to the Node.js server
+     */
     private void emitEvent(String type, String room, Object payload) {
         Map<String, Object> body = new HashMap<>();
         body.put("type", type);
@@ -36,10 +40,13 @@ public class SocketIOServiceImpl implements SocketIOService {
 
         HttpEntity<Map<String, Object>> request = new HttpEntity<>(body, headers);
 
-        ResponseEntity<String> response = restTemplate.postForEntity(SOCKET_SERVER_URL, request, String.class);
+        ResponseEntity<String> response =
+                restTemplate.postForEntity(SOCKET_REST_URL, request, String.class);
 
         if (!response.getStatusCode().is2xxSuccessful()) {
             throw new RuntimeException("Failed to emit event: " + response.getBody());
+        } else {
+            System.out.printf("✅ Event [%s] sent to room [%s]%n", type, room);
         }
     }
 }
