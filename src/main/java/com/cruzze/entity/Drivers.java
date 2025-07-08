@@ -51,12 +51,10 @@ public class Drivers {
     @Column(name = "registration_date", nullable = true)
     private String registrationDate;
 
-    @Lob
-    @Column(name = "profile_image", columnDefinition = "BYTEA")
+    @Column(name = "profile_image")
     private byte[] profileImage;
 
-    @Lob
-    @Column(name = "license_image", columnDefinition = "BYTEA")
+    @Column(name = "license_image")
     private byte[] licenseImage;
 
     @Column(name = "license_number", nullable = true, unique = true)
