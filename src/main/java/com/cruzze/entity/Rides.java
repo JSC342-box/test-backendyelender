@@ -18,7 +18,7 @@ public class Rides {
     private Users user;
 
     @ManyToOne
-    @JoinColumn(name = "clerk_driver_id")
+    @JoinColumn(name = "clerk_driver_id", referencedColumnName ="clerk_driver_id")
     private Drivers driver;
 
     @Column(name = "pickup_latitude", precision = 10, scale = 8)
