@@ -62,31 +62,26 @@ public class RidesController {
     
     @PostMapping("/accept")
     public ResponseEntity<?> acceptRide(@RequestParam Long rideId,
-                                        @RequestParam String driverId) {
+                                         @RequestParam String clerkDriverId) {
         try {
-            log.info("🔁 Accept request received: rideId={}, driverId={}", rideId, driverId);
+            log.info("🔁 Accept request received: rideId={}, clerkDriverId={}", rideId, clerkDriverId);
 
-            Drivers driver = driverService.getDriverByClerkId(driverId).getData();
-            log.info("✔️ Driver found: {}", driver.getClerkDriverId());
-
-            Optional<Rides> updatedRide = ridesService.assignDriver(rideId, driver);
+            Optional<Rides> updatedRide = ridesService.assignDriver(rideId, clerkDriverId);
 
             if (updatedRide.isPresent()) {
                 log.info("✔️ Ride assigned successfully: {}", updatedRide.get().getId());
                 return ResponseEntity.ok(updatedRide.get());
             } else {
                 log.warn("❌ assignDriver returned empty Optional for rideId={}", rideId);
-                return ResponseEntity.badRequest().body("Invalid Ride ID");
+                return ResponseEntity.badRequest().body("Invalid Ride ID or already assigned");
             }
 
-        } catch (ResponseStatusException ex) {
-            log.error("🚨 Driver entity error: {}, {}", ex.getStatusCode(), ex.getReason());
-            return ResponseEntity.status(ex.getStatusCode()).body(Map.of("error", ex.getReason()));
         } catch (Exception ex) {
             log.error("⚠️ Unexpected error while assigning ride", ex);
             return ResponseEntity.status(500).body(Map.of("error", "Internal server error"));
         }
     }
+
 
     @GetMapping("/{id}")
     public ResponseEntity<?> getRide(@PathVariable Long id) {

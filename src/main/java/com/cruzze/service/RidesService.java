@@ -90,19 +90,18 @@ return savedRide;
 
     
     
-    public Optional<Rides> assignDriver(Long rideId, Drivers driver) {
+    public Optional<Rides> assignDriver(Long rideId, String clerkDriverId) {
         Optional<Rides> optionalRide = ridesDao.findById(rideId);
         if (optionalRide.isPresent()) {
             Rides ride = optionalRide.get();
 
             // ❌ Already accepted by another driver?
             if (ride.getStatus() != Rides.RideStatus.PENDING) {
-                return Optional.empty(); // return empty
+                return Optional.empty(); 
             }
 
-            // ✅ Assign current driver
-            ride.setClerkDriverId(driver.getClerkDriverId());
-            ride.setDriver(driver);
+            // ✅ Assign driverClerkId
+            ride.setClerkDriverId(clerkDriverId);
             ride.setStatus(Rides.RideStatus.ACCEPTED);
             Rides updated = ridesDao.save(ride);
 
@@ -113,6 +112,7 @@ return savedRide;
         }
         return Optional.empty();
     }
+
 
 
     public Optional<Rides> getRide(Long id) {
