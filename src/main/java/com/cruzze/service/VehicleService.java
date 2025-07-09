@@ -21,8 +21,8 @@ public class VehicleService {
     private DriverDao driverDao;
 
     public ResponseStructure<Vehicles> createVehicle(Vehicles vehicle) {
-        Long driverId = vehicle.getDriver().getId();
-        Drivers driver = driverDao.getDriverById(driverId)
+        String driverId = vehicle.getDriver().getClerkDriverId();
+        Drivers driver = driverDao.getDriverByClerkId(driverId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Driver not found"));
 
         vehicle.setDriver(driver);
