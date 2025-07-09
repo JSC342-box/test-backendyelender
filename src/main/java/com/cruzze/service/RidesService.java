@@ -101,6 +101,7 @@ return savedRide;
             }
 
             // ✅ Assign current driver
+            ride.setClerkDriverId(driver.getClerkDriverId());
             ride.setDriver(driver);
             ride.setStatus(Rides.RideStatus.ACCEPTED);
             Rides updated = ridesDao.save(ride);
