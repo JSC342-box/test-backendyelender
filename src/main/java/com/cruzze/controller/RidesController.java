@@ -62,11 +62,11 @@ public class RidesController {
     
     @PostMapping("/accept")
     public ResponseEntity<?> acceptRide(@RequestParam Long rideId,
-                                        @RequestParam Long driverId) {
+                                        @RequestParam String driverId) {
         try {
             log.info("🔁 Accept request received: rideId={}, driverId={}", rideId, driverId);
 
-            Drivers driver = driverService.getDriverEntityById(driverId);
+            Drivers driver = driverService.getDriverByClerkId(driverId).getData();
             log.info("✔️ Driver found: {}", driver.getId());
 
             Optional<Rides> updatedRide = ridesService.assignDriver(rideId, driver);
