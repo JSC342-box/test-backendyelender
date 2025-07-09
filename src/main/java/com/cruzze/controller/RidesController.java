@@ -67,7 +67,7 @@ public class RidesController {
             log.info("🔁 Accept request received: rideId={}, driverId={}", rideId, driverId);
 
             Drivers driver = driverService.getDriverByClerkId(driverId).getData();
-            log.info("✔️ Driver found: {}", driver.getId());
+            log.info("✔️ Driver found: {}", driver.getClerkDriverId());
 
             Optional<Rides> updatedRide = ridesService.assignDriver(rideId, driver);
 
