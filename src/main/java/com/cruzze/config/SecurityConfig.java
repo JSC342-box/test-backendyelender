@@ -19,7 +19,8 @@ public class SecurityConfig {
         http
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
-                .anyRequest().authenticated() // ✅ Now all endpoints require valid token
+                .requestMatchers("/rides/rideRequest").permitAll()  // 👈 allow this endpoint without auth
+                .anyRequest().authenticated()                       // 👈 all others require token
             )
             .addFilterBefore(clerkJwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
