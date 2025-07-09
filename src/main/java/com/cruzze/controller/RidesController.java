@@ -38,7 +38,7 @@ public class RidesController {
     @Autowired
     private DriverService driverService;
 
-    @PostMapping("/request")
+    @PostMapping("/rideRequest")
     public ResponseEntity<?> requestRide(@RequestBody Map<String, Object> body) {
         String clerkUserId = body.get("clerkUserId").toString();;
         BigDecimal pickupLat = new BigDecimal(body.get("pickupLatitude").toString());
