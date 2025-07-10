@@ -25,22 +25,19 @@ public class DriverController {
 
     @PostMapping(value = "/createDrivers", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ResponseStructure<Drivers>> createDriver(
-    		 @RequestPart("token") String bearerToken,
+             @RequestPart("token") String bearerToken,
             @RequestPart(value = "profileImage", required = false) MultipartFile profileImage,
             @RequestPart(value = "licenseImage", required = false) MultipartFile licenseImage) {
 
         try {
-            // 🔷 Verify JWT
             String token = bearerToken.replace("Bearer ", "");
             Map<String, Object> claims = JwtUtils.verifyAndExtractPayload(token);
 
-            // 🔷 Validate userType is driver
             String userType = (String) claims.get("userType");
             if (!"driver".equalsIgnoreCase(userType)) {
                 throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Invalid userType for driver registration");
             }
 
-            // 🔷 Create driver from JWT claims
             Drivers driver = new Drivers();
             driver.setClerkDriverId((String) claims.get("sub"));
             driver.setFirstName((String) claims.get("firstName"));
@@ -48,7 +45,6 @@ public class DriverController {
             driver.setPhoneNumber((String) claims.get("phoneNumber"));
             driver.setUserType(userType);
 
-            // 🔷 Optional images
             if (profileImage != null && !profileImage.isEmpty()) {
                 driver.setProfileImage(profileImage.getBytes());
             }
@@ -57,7 +53,20 @@ public class DriverController {
                 driver.setLicenseImage(licenseImage.getBytes());
             }
 
-            // 🔷 Save driver
+            // 🔷 Optionally set referralCode & referredBy from public_metadata
+            Map<String, Object> publicMetadata = (Map<String, Object>) claims.get("public_metadata");
+            if (publicMetadata != null) {
+                String referralCode = (String) publicMetadata.get("referralCode");
+                if (referralCode != null && !referralCode.isBlank()) {
+                    driver.setReferralCode(referralCode);
+                }
+
+                String referredBy = (String) publicMetadata.get("referredBy");
+                if (referredBy != null && !referredBy.isBlank()) {
+                    driver.setReferredBy(referredBy);
+                }
+            }
+
             ResponseStructure<Drivers> response = driverService.createDriver(driver);
             return ResponseEntity.status(response.getStatus()).body(response);
 
@@ -68,7 +77,6 @@ public class DriverController {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error processing driver data", e);
         }
     }
-
 
 
     @GetMapping("/{id}")
