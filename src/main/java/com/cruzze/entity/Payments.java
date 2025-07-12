@@ -16,13 +16,11 @@ public class Payments {
     @JoinColumn(name = "ride_id", nullable = false)
     private Rides ride;
 
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "user_id", nullable = false)
-    private Users user;
+    @Column(name = "clerk_user_id", nullable = false)
+    private String clerkUserId;
 
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "driver_id", nullable = false)
-    private Drivers driver;
+    @Column(name = "clerk_driver_id", nullable = false)
+    private String clerkDriverId;
 
     @Column(name = "amount", precision = 10, scale = 2, nullable = false)
     private BigDecimal amount;
@@ -85,20 +83,20 @@ public class Payments {
 		this.ride = ride;
 	}
 
-	public Users getUser() {
-		return user;
+	public String getClerkUserId() {
+		return clerkUserId;
 	}
 
-	public void setUser(Users user) {
-		this.user = user;
+	public void setClerkUserId(String clerkUserId) {
+		this.clerkUserId = clerkUserId;
 	}
 
-	public Drivers getDriver() {
-		return driver;
+	public String getClerkDriverId() {
+		return clerkDriverId;
 	}
 
-	public void setDriver(Drivers driver) {
-		this.driver = driver;
+	public void setClerkDriverId(String clerkDriverId) {
+		this.clerkDriverId = clerkDriverId;
 	}
 
 	public BigDecimal getAmount() {
