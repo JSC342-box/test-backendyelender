@@ -26,6 +26,11 @@ public class SocketIOServiceImpl implements SocketIOService {
         emitEvent("ride_accepted", "user:" + userId, updatedRide);
     }
 
+    @Override
+    public void sendRideCompleted(String userId, Rides ride) {
+        emitEvent("ride_completed", "user:" + userId, ride);
+    }
+
     /**
      * Internal helper to POST an event to the Node.js server
      */

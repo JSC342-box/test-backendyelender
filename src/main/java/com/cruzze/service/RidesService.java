@@ -119,9 +119,6 @@ return savedRide;
         return ridesDao.findById(id);
     }
     
-    
-    
-    
     public Optional<Rides> completeRide(Long rideId) {
         Optional<Rides> optionalRide = ridesDao.findById(rideId);
         if (optionalRide.isPresent()) {
@@ -141,9 +138,17 @@ return savedRide;
             ride.setPaymentStatus(Rides.PaymentStatus.PAID); // or keep as PENDING
 
             Rides updated = ridesDao.save(ride);
+
+            // 🔔 Notify user (or driver) that ride is completed
+            socketIOService.sendRideCompleted(ride.getUser().getClerkUserId(), updated);
+
+
             return Optional.of(updated);
         }
         return Optional.empty();
     }
+
+    
+    
 
 }
