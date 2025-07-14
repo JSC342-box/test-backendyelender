@@ -28,7 +28,7 @@ public class PaymentsController {
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         }
     }
-
+    
     @PostMapping("/createForRide/{rideId}")
     public ResponseEntity<?> createPaymentForRide(@PathVariable Long rideId) {
         try {
