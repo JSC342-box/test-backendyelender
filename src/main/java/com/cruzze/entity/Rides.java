@@ -19,7 +19,7 @@ public class Rides {
 
   
     
-    @Column(name = "clerk_driver_id", nullable = false)
+    @Column(name = "clerk_driver_id", nullable = true)
     private String clerkDriverId; // ✅ Store Clerk Driver ID directly
     
     @Column(name = "pickup_latitude", precision = 10, scale = 8)
