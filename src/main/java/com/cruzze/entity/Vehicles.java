@@ -14,7 +14,7 @@ public class Vehicles {
     private Long id;
 
     @OneToOne
-    @JoinColumn(name = "driver_id", nullable = false, unique = true)
+    @JoinColumn(name = "clerk_driver_id", nullable = false, unique = true)
     @JsonBackReference
     private Drivers driver;
 
