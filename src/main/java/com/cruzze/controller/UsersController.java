@@ -23,87 +23,173 @@ public class UsersController {
 
     @Autowired
     private UsersService usersService;
+    
+//    @PostMapping(value = "/createUsers", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+//public ResponseEntity<ResponseStructure<Users>> createUserFromToken(
+//        @RequestPart(value = "profileImage", required = false) MultipartFile profileImage,
+//        @RequestPart("token") String bearerToken) {
+//
+//    try {
+//        String token = bearerToken.replace("Bearer ", "");
+//        Map<String, Object> claims = JwtUtils.verifyAndExtractPayload(token);
+//
+//        Users user = new Users();
+//
+//        String clerkId = (String) claims.get("sub");
+//        String firstName = (String) claims.get("firstName");
+//        String lastName = (String) claims.get("lastName");
+//        String phoneNumber = (String) claims.get("phoneNumber");
+//        String userType = (String) claims.get("userType");
+//
+//        if (clerkId == null || clerkId.isBlank() ||
+//            firstName == null || firstName.isBlank() ||
+//            lastName == null || lastName.isBlank() ||
+//            phoneNumber == null || phoneNumber.isBlank() ||
+//            userType == null || userType.isBlank()) {
+//            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Required fields are missing.");
+//        }
+//        
+//        user.setClerkUserId(clerkId);
+//        user.setFirstName(firstName);
+//        user.setLastName(lastName);
+//        user.setPhoneNumber(phoneNumber);
+//        user.setUserType(userType);
+//
+//        String email = (String) claims.get("email");
+//        if (email != null && !email.isBlank()) {
+//            user.setEmail(email);
+//        }
+//
+//        if (profileImage != null && !profileImage.isEmpty()) {
+//            user.setProfileImage(profileImage.getBytes());
+//        }
+//
+//        Map<String, Object> publicMetadata = (Map<String, Object>) claims.get("public_metadata");
+//        if (publicMetadata != null) {
+//            String dob = (String) publicMetadata.get("dateOfBirth");
+//            if (dob != null && !dob.isBlank()) {
+//                user.setDateOfBirth(LocalDate.parse(dob));
+//            }
+//
+//            String gender = (String) publicMetadata.get("gender");
+//            if (gender != null && !gender.isBlank()) {
+//                user.setGender(Users.Gender.valueOf(gender.toUpperCase()));
+//            }
+//
+//            String emergencyName = (String) publicMetadata.get("userEmergencyContactName");
+//            if (emergencyName != null && !emergencyName.isBlank()) {
+//                user.setUserEmergencyContactName(emergencyName);
+//            }
+//
+//            String emergencyNumber = (String) publicMetadata.get("userEmergencyContactNumber");
+//            if (emergencyNumber != null && !emergencyNumber.isBlank()) {
+//                user.setUserEmergencyContactNumber(emergencyNumber);
+//            }
+//
+//            String referralCode = (String) publicMetadata.get("referralCode");
+//            if (referralCode != null && !referralCode.isBlank()) {
+//                user.setReferralCode(referralCode);
+//            }
+//
+//            String referredBy = (String) publicMetadata.get("referredBy");
+//            if (referredBy != null && !referredBy.isBlank()) {
+//                user.setReferredBy(referredBy);
+//            }
+//        }
+//
+//        ResponseStructure<Users> response = usersService.createUser(user);
+//        return ResponseEntity.status(response.getStatus()).body(response);
+//
+//    } catch (Exception e) {
+//        e.printStackTrace();
+//        throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid or expired token: " + e.getMessage(), e);
+//    }
+//}
     @PostMapping(value = "/createUsers", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-public ResponseEntity<ResponseStructure<Users>> createUserFromToken(
-        @RequestPart(value = "profileImage", required = false) MultipartFile profileImage,
-        @RequestPart("token") String bearerToken) {
+    public ResponseEntity<ResponseStructure<Users>> createUserFromToken(
+            @RequestPart(value = "profileImage", required = false) MultipartFile profileImage,
+            @RequestPart("token") String bearerToken) {
 
-    try {
-        String token = bearerToken.replace("Bearer ", "");
-        Map<String, Object> claims = JwtUtils.verifyAndExtractPayload(token);
+        try {
+            String token = bearerToken.replace("Bearer ", "");
+            Map<String, Object> claims = JwtUtils.verifyAndExtractPayload(token);
 
-        Users user = new Users();
+            Users user = new Users();
 
-        String clerkId = (String) claims.get("sub");
-        String firstName = (String) claims.get("firstName");
-        String lastName = (String) claims.get("lastName");
-        String phoneNumber = (String) claims.get("phoneNumber");
-        String userType = (String) claims.get("userType");
+            String clerkId = (String) claims.get("sub");
+            String firstName = (String) claims.get("firstName");
+            String lastName = (String) claims.get("lastName");
+            String phoneNumber = (String) claims.get("phoneNumber");
+            String userType = (String) claims.get("userType");
 
-        if (clerkId == null || clerkId.isBlank() ||
-            firstName == null || firstName.isBlank() ||
-            lastName == null || lastName.isBlank() ||
-            phoneNumber == null || phoneNumber.isBlank() ||
-            userType == null || userType.isBlank()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Required fields are missing.");
+            if (clerkId == null || clerkId.isBlank() ||
+                firstName == null || firstName.isBlank() ||
+                lastName == null || lastName.isBlank() ||
+                phoneNumber == null || phoneNumber.isBlank() ||
+                userType == null || userType.isBlank()) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Required fields are missing.");
+            }
+
+            user.setClerkUserId(clerkId);
+            user.setFirstName(firstName);
+            user.setLastName(lastName);
+            user.setPhoneNumber(phoneNumber);
+            user.setUserType(userType);
+
+            String email = (String) claims.get("email");
+            if (email != null && !email.isBlank()) {
+                user.setEmail(email);
+            }
+
+            if (profileImage != null && !profileImage.isEmpty()) {
+                user.setProfileImage(profileImage.getBytes());
+            }
+
+            Map<String, Object> publicMetadata = (Map<String, Object>) claims.get("public_metadata");
+            if (publicMetadata != null) {
+                String dob = (String) publicMetadata.get("dateOfBirth");
+                if (dob != null && !dob.isBlank()) {
+                    user.setDateOfBirth(LocalDate.parse(dob));
+                }
+
+                String gender = (String) publicMetadata.get("gender");
+                if (gender != null && !gender.isBlank()) {
+                    user.setGender(Users.Gender.valueOf(gender.toUpperCase()));
+                }
+
+                String emergencyName = (String) publicMetadata.get("userEmergencyContactName");
+                if (emergencyName != null && !emergencyName.isBlank()) {
+                    user.setUserEmergencyContactName(emergencyName);
+                }
+
+                String emergencyNumber = (String) publicMetadata.get("userEmergencyContactNumber");
+                if (emergencyNumber != null && !emergencyNumber.isBlank()) {
+                    user.setUserEmergencyContactNumber(emergencyNumber);
+                }
+
+                String referralCode = (String) publicMetadata.get("referralCode");
+                if (referralCode != null && !referralCode.isBlank()) {
+                    user.setReferralCode(referralCode);
+                }
+
+                String referredBy = (String) publicMetadata.get("referredBy");
+                if (referredBy != null && !referredBy.isBlank()) {
+                    user.setReferredBy(referredBy);
+                }
+            }
+
+            ResponseStructure<Users> response = usersService.createUser(user);
+            return ResponseEntity.status(response.getStatus()).body(response);
+
+        } catch (ResponseStatusException e) {
+            // re-throw without overwriting so 409, 404 etc work properly
+            throw e;
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Unexpected error: " + e.getMessage(), e);
         }
-        
-        user.setClerkUserId(clerkId);
-        user.setFirstName(firstName);
-        user.setLastName(lastName);
-        user.setPhoneNumber(phoneNumber);
-        user.setUserType(userType);
-
-        String email = (String) claims.get("email");
-        if (email != null && !email.isBlank()) {
-            user.setEmail(email);
-        }
-
-        if (profileImage != null && !profileImage.isEmpty()) {
-            user.setProfileImage(profileImage.getBytes());
-        }
-
-        Map<String, Object> publicMetadata = (Map<String, Object>) claims.get("public_metadata");
-        if (publicMetadata != null) {
-            String dob = (String) publicMetadata.get("dateOfBirth");
-            if (dob != null && !dob.isBlank()) {
-                user.setDateOfBirth(LocalDate.parse(dob));
-            }
-
-            String gender = (String) publicMetadata.get("gender");
-            if (gender != null && !gender.isBlank()) {
-                user.setGender(Users.Gender.valueOf(gender.toUpperCase()));
-            }
-
-            String emergencyName = (String) publicMetadata.get("userEmergencyContactName");
-            if (emergencyName != null && !emergencyName.isBlank()) {
-                user.setUserEmergencyContactName(emergencyName);
-            }
-
-            String emergencyNumber = (String) publicMetadata.get("userEmergencyContactNumber");
-            if (emergencyNumber != null && !emergencyNumber.isBlank()) {
-                user.setUserEmergencyContactNumber(emergencyNumber);
-            }
-
-            String referralCode = (String) publicMetadata.get("referralCode");
-            if (referralCode != null && !referralCode.isBlank()) {
-                user.setReferralCode(referralCode);
-            }
-
-            String referredBy = (String) publicMetadata.get("referredBy");
-            if (referredBy != null && !referredBy.isBlank()) {
-                user.setReferredBy(referredBy);
-            }
-        }
-
-        ResponseStructure<Users> response = usersService.createUser(user);
-        return ResponseEntity.status(response.getStatus()).body(response);
-
-    } catch (Exception e) {
-        e.printStackTrace();
-        throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid or expired token: " + e.getMessage(), e);
     }
-}
+
 
 
 

@@ -13,14 +13,11 @@ public class WebConfig {
         return new WebMvcConfigurer() {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
-                registry.addMapping("/**") // allow all endpoints
-                        .allowedOrigins(
-                            "http://localhost:8081", 
-                            "http://localhost:19002"
-                        )
+                registry.addMapping("/**")
+                        .allowedOrigins("*")  // allow all origins (React Native friendly)
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                         .allowedHeaders("*")
-                        .allowCredentials(true);
+                        .allowCredentials(false);
             }
         };
     }
