@@ -1,4 +1,4 @@
-package com.cruzze.controller;
+ package com.cruzze.controller;
 
 import com.cruzze.entity.Drivers;
 import com.cruzze.service.DriverService;
@@ -23,55 +23,52 @@ public class DriverController {
     @Autowired
     private DriverService driverService;
 
-  @PostMapping(value = "/createDrivers", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-public ResponseEntity<ResponseStructure<Drivers>> createDriver(
-        @RequestPart("driver") String driverJson,
-        @RequestPart("token") String bearerToken,
-        @RequestPart(value = "profileImage", required = false) MultipartFile profileImage,
-        @RequestPart(value = "licenseImage", required = false) MultipartFile licenseImage) {
+    @PostMapping(value = "/createDrivers", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<ResponseStructure<Drivers>> createDriver(
+    		 @RequestPart("token") String bearerToken,
+            @RequestPart(value = "profileImage", required = false) MultipartFile profileImage,
+            @RequestPart(value = "licenseImage", required = false) MultipartFile licenseImage) {
 
-    try {
-        // 🔷 Verify JWT
-        String token = bearerToken.replace("Bearer ", "");
-        Map<String, Object> claims = JwtUtils.verifyAndExtractPayload(token);
+        try {
+            // 🔷 Verify JWT
+            String token = bearerToken.replace("Bearer ", "");
+            Map<String, Object> claims = JwtUtils.verifyAndExtractPayload(token);
 
-        // 🔷 Validate userType is driver
-        String userType = (String) claims.get("userType");
-        if (!"driver".equalsIgnoreCase(userType)) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Invalid userType for driver registration");
+            // 🔷 Validate userType is driver
+            String userType = (String) claims.get("userType");
+            if (!"driver".equalsIgnoreCase(userType)) {
+                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Invalid userType for driver registration");
+            }
+
+            // 🔷 Create driver from JWT claims
+            Drivers driver = new Drivers();
+            driver.setClerkDriverId((String) claims.get("sub"));
+            driver.setFirstName((String) claims.get("firstName"));
+            driver.setLastName((String) claims.get("lastName"));
+            driver.setPhoneNumber((String) claims.get("phoneNumber"));
+            driver.setUserType(userType);
+
+            // 🔷 Optional images
+            if (profileImage != null && !profileImage.isEmpty()) {
+                driver.setProfileImage(profileImage.getBytes());
+            }
+
+            if (licenseImage != null && !licenseImage.isEmpty()) {
+                driver.setLicenseImage(licenseImage.getBytes());
+            }
+
+            // 🔷 Save driver
+            ResponseStructure<Drivers> response = driverService.createDriver(driver);
+            return ResponseEntity.status(response.getStatus()).body(response);
+
+        } catch (ResponseStatusException e) {
+            throw e;
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error processing driver data", e);
         }
-
-        // 🔷 Parse JSON body
-        ObjectMapper mapper = new ObjectMapper();
-        Drivers driver = mapper.readValue(driverJson, Drivers.class);
-
-        // 🔷 Overwrite mandatory fields from JWT
-        driver.setClerkDriverId((String) claims.get("sub"));
-        driver.setFirstName((String) claims.get("firstName"));
-        driver.setLastName((String) claims.get("lastName"));
-        driver.setPhoneNumber((String) claims.get("phoneNumber"));
-        driver.setUserType(userType);
-
-        // 🔷 Optional images
-        if (profileImage != null && !profileImage.isEmpty()) {
-            driver.setProfileImage(profileImage.getBytes());
-        }
-
-        if (licenseImage != null && !licenseImage.isEmpty()) {
-            driver.setLicenseImage(licenseImage.getBytes());
-        }
-
-        // 🔷 Pass to service
-        ResponseStructure<Drivers> response = driverService.createDriver(driver);
-        return ResponseEntity.status(response.getStatus()).body(response);
-
-    } catch (ResponseStatusException e) {
-        throw e; // rethrow to propagate status
-    } catch (Exception e) {
-        e.printStackTrace();
-        throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error processing driver data", e);
     }
-}
+
 
 
     @GetMapping("/{id}")

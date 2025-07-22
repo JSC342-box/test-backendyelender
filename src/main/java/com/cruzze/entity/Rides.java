@@ -17,10 +17,11 @@ public class Rides {
     @JoinColumn(name = "clerk_user_id", referencedColumnName = "clerk_user_id")
     private Users user;
 
-    @ManyToOne
-    @JoinColumn(name = "clerk_driver_id")
-    private Drivers driver;
-
+  
+    
+    @Column(name = "clerk_driver_id", nullable = false)
+    private String clerkDriverId; // ✅ Store Clerk Driver ID directly
+    
     @Column(name = "pickup_latitude", precision = 10, scale = 8)
     private BigDecimal pickupLatitude;
 
@@ -128,13 +129,7 @@ public class Rides {
 		this.paymentMode = paymentMode;
 	}
 
-	public Drivers getDriver() {
-		return driver;
-	}
-
-	public void setDriver(Drivers driver) {
-		this.driver = driver;
-	}
+	
 
 	public BigDecimal getPickupLatitude() {
 		return pickupLatitude;
@@ -208,7 +203,15 @@ public class Rides {
 		this.updatedAt = updatedAt;
 	}
 
-    // Getters and Setters omitted for brevity
+	public String getClerkDriverId() {
+		return clerkDriverId;
+	}
+
+	public void setClerkDriverId(String clerkDriverId) {
+		this.clerkDriverId = clerkDriverId;
+	}
+
+
     
     
 }

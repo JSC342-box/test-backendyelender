@@ -12,7 +12,7 @@ import java.util.Map;
 public class SocketIOServiceImpl implements SocketIOService {
 
     // 🚀 Railway deployed Node.js REST endpoint
-    private static final String SOCKET_REST_URL = "https://roqet-socket.up.railway.app/emit";
+    private static final String SOCKET_REST_URL = "https://roqet-socket.up.railway.app:3000/emit";
 
     private final RestTemplate restTemplate = new RestTemplate();
 
