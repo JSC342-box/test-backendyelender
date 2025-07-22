@@ -100,6 +100,13 @@ public class Drivers {
 
     @Column(name = "last_location_update")
     private LocalDateTime lastLocationUpdate;
+    
+    @Column(name = "referral_code", unique = true)
+    private String referralCode;
+
+    @Column(name = "referred_by")
+    private String referredBy;
+
 
     @OneToOne(mappedBy = "driver", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JsonManagedReference
@@ -138,6 +145,22 @@ public class Drivers {
 
     public String getClerkDriverId() {
         return clerkDriverId;
+    }
+
+    public String getReferralCode() {
+        return referralCode;
+    }
+
+    public void setReferralCode(String referralCode) {
+        this.referralCode = referralCode;
+    }
+
+    public String getReferredBy() {
+        return referredBy;
+    }
+
+    public void setReferredBy(String referredBy) {
+        this.referredBy = referredBy;
     }
 
     public void setClerkDriverId(String clerkDriverId) {
