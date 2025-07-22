@@ -47,7 +47,7 @@ public ResponseEntity<ResponseStructure<Users>> createUserFromToken(
             userType == null || userType.isBlank()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Required fields are missing.");
         }
-
+        
         user.setClerkUserId(clerkId);
         user.setFirstName(firstName);
         user.setLastName(lastName);

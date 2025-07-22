@@ -31,7 +31,7 @@ public class ClerkJwtAuthenticationFilter extends OncePerRequestFilter {
             response.getWriter().write("Missing or invalid Authorization header");
             return;
         }
-
+        
         try {
             String token = authHeader.replace("Bearer ", "");
             Map<String, Object> claims = JwtUtils.verifyAndExtractPayload(token);
