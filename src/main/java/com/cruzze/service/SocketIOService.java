@@ -6,5 +6,5 @@ public interface SocketIOService {
     void sendRideRequest(String driverId, Rides ride);
     void sendRideAccepted(String userId, Rides updatedRide);
     void sendRideCompleted(String userId, Rides ride);
-
+    void sendRideCancelled(String cancelledBy, Rides ride);
 }

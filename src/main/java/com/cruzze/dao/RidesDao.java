@@ -22,5 +22,10 @@ public class RidesDao {
     public Optional<Rides> findById(Long id) {
         return ridesRepository.findById(id);
     }
+    
+    public Rides cancelRide(Rides ride) {
+        ride.setStatus(Rides.RideStatus.CANCELLED);
+        return ridesRepository.save(ride);
+    }
 }
 
