@@ -4,14 +4,14 @@ import com.cruzze.entity.Rides;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-import com.cruzze.service.SocketIOService;
+
 import java.util.HashMap;
 import java.util.Map;
 
 @Service
 public class SocketIOServiceImpl implements SocketIOService {
 
-    // 🚀 Railway deployed Node.js REST endpoint
+    // 🌐 Your Railway deployed Node.js REST endpoint
     private static final String SOCKET_REST_URL = "https://roqet-socket.up.railway.app:3000/emit";
 
     private final RestTemplate restTemplate = new RestTemplate();
@@ -29,6 +29,19 @@ public class SocketIOServiceImpl implements SocketIOService {
     @Override
     public void sendRideCompleted(String userId, Rides ride) {
         emitEvent("ride_completed", "user:" + userId, ride);
+    }
+
+    @Override
+    public void sendRideCancelled(String cancelledBy, Rides ride) {
+        String room;
+        if ("rider".equalsIgnoreCase(cancelledBy)) {
+            room = "driver:" + ride.getClerkDriverId(); // notify driver
+        } else if ("driver".equalsIgnoreCase(cancelledBy)) {
+            room = "user:" + ride.getUser().getClerkUserId(); // notify user
+        } else {
+            room = "user:" + ride.getUser().getClerkUserId(); // default notify user
+        }
+        emitEvent("ride_cancelled", room, ride);
     }
 
     /**

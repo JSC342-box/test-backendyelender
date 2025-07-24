@@ -99,6 +99,22 @@ public class RidesController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid Ride ID");
         }
     }
+    
+    @PostMapping("/cancel")
+    public ResponseEntity<?> cancelRide(@RequestParam Long rideId,
+                                         @RequestParam(required = false) String cancelledBy) {
+        try {
+            Optional<Rides> optionalRide = ridesService.cancelRide(rideId, cancelledBy != null ? cancelledBy : "UNKNOWN");
+            if (optionalRide.isPresent()) {
+                return ResponseEntity.ok(optionalRide.get());
+            } else {
+                return ResponseEntity.badRequest().body("Invalid Ride ID or ride cannot be cancelled");
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return ResponseEntity.status(500).body(Map.of("error", "Internal Server Error"));
+        }
+    }
 
 
 }

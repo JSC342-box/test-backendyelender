@@ -148,7 +148,31 @@ return savedRide;
         return Optional.empty();
     }
 
-    
+    public Optional<Rides> cancelRide(Long rideId, String cancelledBy) {
+        Optional<Rides> optionalRide = ridesDao.findById(rideId);
+        if (optionalRide.isPresent()) {
+            Rides ride = optionalRide.get();
+
+            // 🚫 cannot cancel if already completed or cancelled
+            if (ride.getStatus() == Rides.RideStatus.COMPLETED || 
+                ride.getStatus() == Rides.RideStatus.CANCELLED) {
+                return Optional.empty();
+            }
+
+            // optionally record who cancelled (add a column if desired)
+            // ride.setCancelledBy(cancelledBy);
+
+            ride.setStatus(Rides.RideStatus.CANCELLED);
+
+            Rides updatedRide = ridesDao.save(ride);
+
+            // 🔔 notify user/driver
+            socketIOService.sendRideCancelled(ride.getUser().getClerkUserId(), updatedRide);
+
+            return Optional.of(updatedRide);
+        }
+        return Optional.empty();
+    }
     
 
 }
