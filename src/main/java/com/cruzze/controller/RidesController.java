@@ -215,6 +215,14 @@ public class RidesController {
         try {
             log.info("🚗 Ride request received - Body: {}", body);
             
+            // Validate required fields
+            if (!body.containsKey("clerkUserId") || !body.containsKey("pickupLatitude") || 
+                !body.containsKey("pickupLongitude") || !body.containsKey("dropLatitude") || 
+                !body.containsKey("dropLongitude")) {
+                log.error("❌ Missing required fields in ride request");
+                return ResponseEntity.badRequest().body(Map.of("error", "Missing required fields"));
+            }
+            
             String clerkUserId = body.get("clerkUserId").toString();
             BigDecimal pickupLat = new BigDecimal(body.get("pickupLatitude").toString());
             BigDecimal pickupLng = new BigDecimal(body.get("pickupLongitude").toString());
@@ -223,8 +231,14 @@ public class RidesController {
             String notes = (String) body.getOrDefault("notes", "");
 
             Rides.VehicleType vehicleType = null;
+            
             if (body.containsKey("vehicleType")) {
-                vehicleType = Rides.VehicleType.valueOf(body.get("vehicleType").toString());
+                try {
+                    vehicleType = Rides.VehicleType.valueOf(body.get("vehicleType").toString());
+                } catch (IllegalArgumentException e) {
+                    log.error("❌ Invalid vehicle type: {}", body.get("vehicleType"));
+                    return ResponseEntity.badRequest().body(Map.of("error", "Invalid vehicle type"));
+                }
             }
 
             log.info("🚗 Processing ride request for user: {}", clerkUserId);
@@ -235,14 +249,23 @@ public class RidesController {
                 return ResponseEntity.badRequest().body(Map.of("error", "User not found"));
             }
             
+            log.info("🚗 Creating ride for user: {}", user.getClerkUserId());
+            
             Rides ride = ridesService.requestRide(user, pickupLat, pickupLng, dropLat, dropLng, vehicleType, notes);
             
             log.info("✅ Ride request successful - Ride ID: {}", ride.getId());
             return ResponseEntity.ok(ride);
             
+        } catch (NumberFormatException e) {
+            log.error("❌ Invalid number format in ride request: {}", e.getMessage());
+            return ResponseEntity.badRequest().body(Map.of("error", "Invalid number format in coordinates"));
         } catch (Exception e) {
             log.error("❌ Ride request failed", e);
-            return ResponseEntity.status(500).body(Map.of("error", "Ride request failed", "message", e.getMessage()));
+            return ResponseEntity.status(500).body(Map.of(
+                "error", "Ride request failed", 
+                "message", e.getMessage(),
+                "details", "Please try again or contact support"
+            ));
         }
     }
 
