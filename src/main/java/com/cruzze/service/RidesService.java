@@ -167,7 +167,8 @@ return savedRide;
             Rides updatedRide = ridesDao.save(ride);
 
             // 🔔 notify user/driver
-            socketIOService.sendRideCancelled(ride.getUser().getClerkUserId(), updatedRide);
+            socketIOService.sendRideCancelled(cancelledBy, updatedRide);
+
 
             return Optional.of(updatedRide);
         }
